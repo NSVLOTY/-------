@@ -1,15 +1,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.tailwindcss.com"></script>
-
 html
-    body {
-        font-family: 'Tajawal', sans-serif;
-        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-        height: 100vh;
-        direction: rtl;
-    }
-    
     .typing-text::-webkit-scrollbar {
         width: 0;
     }
@@ -25,7 +17,7 @@ html
     }
     
     .current {
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.3);
         border-radius: 2px;
     }
     
@@ -36,7 +28,7 @@ html
     }
     
     .difficulty-btn.active {
-        background-color: #1d4ed8;
+        background-color: #6d28d9;
         color: white;
     }
     
@@ -91,21 +83,79 @@ html
     .timer-bar {
         transition: width 0.1s linear;
     }
+    
+    .game-container {
+        background-color: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .game-panel {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .btn-primary {
+        background-color: #8b5cf6;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background-color: #7c3aed;
+        transform: translateY(-2px);
+    }
+    
+    .btn-success {
+        background-color: #10b981;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-success:hover {
+        background-color: #059669;
+        transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+        background-color: #6b7280;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #4b5563;
+        transform: translateY(-2px);
+    }
+    
+    .stat-card {
+        background-color: rgba(139, 92, 246, 0.2);
+        border-radius: 0.5rem;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    
+    .highlight-text {
+        color: #f0abfc;
+        font-weight: 600;
+    }
 </style>
     <!-- شاشة البداية -->
     <div id="start-screen" class="fade-in">
-        <div class="bg-white bg-opacity-20 rounded-lg p-6 mb-6">
+        <div class="game-panel p-6 mb-6">
             <h2 class="text-xl font-bold text-white mb-4">اختر مستوى الصعوبة</h2>
             <div class="flex flex-wrap gap-3 mb-6">
-                <button class="difficulty-btn bg-white bg-opacity-30 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all active" data-difficulty="سهل">سهل</button>
-                <button class="difficulty-btn bg-white bg-opacity-30 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all" data-difficulty="متوسط">متوسط</button>
-                <button class="difficulty-btn bg-white bg-opacity-30 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all" data-difficulty="صعب">صعب</button>
-                <button class="difficulty-btn bg-white bg-opacity-30 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all" data-difficulty="خبير">خبير</button>
+                <button class="difficulty-btn bg-white bg-opacity-20 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all active" data-difficulty="سهل">سهل</button>
+                <button class="difficulty-btn bg-white bg-opacity-20 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all" data-difficulty="متوسط">متوسط</button>
+                <button class="difficulty-btn bg-white bg-opacity-20 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all" data-difficulty="صعب">صعب</button>
+                <button class="difficulty-btn bg-white bg-opacity-20 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all" data-difficulty="خبير">خبير</button>
             </div>
             
             <div class="mb-6">
                 <h3 class="text-lg font-medium text-white mb-2">تعليمات اللعبة:</h3>
-                <ul class="text-blue-100 list-disc list-inside space-y-1">
+                <ul class="text-purple-200 list-disc list-inside space-y-1">
                     <li>اكتب النص المعروض بأسرع ما يمكن وبدقة عالية</li>
                     <li>سيتم احتساب الوقت والدقة لكل جملة</li>
                     <li>كلما زادت الصعوبة، زادت صعوبة النصوص وقل الوقت المتاح</li>
@@ -113,20 +163,20 @@ html
                 </ul>
             </div>
             
-            <button id="start-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all pulse">
+            <button id="start-btn" class="w-full btn-success font-bold py-3 px-6 rounded-lg pulse">
                 ابدأ التحدي
             </button>
         </div>
         
-        <div class="bg-white bg-opacity-20 rounded-lg p-6">
+        <div class="game-panel p-6">
             <h2 class="text-xl font-bold text-white mb-4">أفضل النتائج</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white bg-opacity-10 rounded-lg p-4">
-                    <h3 class="font-medium text-white mb-2">السرعة</h3>
+                <div class="stat-card p-4">
+                    <h3 class="font-medium text-purple-200 mb-2">السرعة</h3>
                     <p id="best-speed" class="text-2xl font-bold text-yellow-300">0 كلمة/دقيقة</p>
                 </div>
-                <div class="bg-white bg-opacity-10 rounded-lg p-4">
-                    <h3 class="font-medium text-white mb-2">الدقة</h3>
+                <div class="stat-card p-4">
+                    <h3 class="font-medium text-purple-200 mb-2">الدقة</h3>
                     <p id="best-accuracy" class="text-2xl font-bold text-yellow-300">0%</p>
                 </div>
             </div>
@@ -137,17 +187,17 @@ html
     <div id="game-screen" class="hidden fade-in">
         <div class="flex justify-between items-center mb-4">
             <div class="flex items-center gap-4">
-                <div class="bg-white bg-opacity-20 rounded-lg py-2 px-4">
-                    <span class="text-sm text-blue-100">المستوى:</span>
+                <div class="game-panel py-2 px-4">
+                    <span class="text-sm text-purple-200">المستوى:</span>
                     <span id="difficulty-display" class="font-bold text-white">سهل</span>
                 </div>
-                <div class="bg-white bg-opacity-20 rounded-lg py-2 px-4">
-                    <span class="text-sm text-blue-100">الجملة:</span>
+                <div class="game-panel py-2 px-4">
+                    <span class="text-sm text-purple-200">الجملة:</span>
                     <span id="sentence-count" class="font-bold text-white">1/10</span>
                 </div>
             </div>
-            <div class="bg-white bg-opacity-20 rounded-lg py-2 px-4">
-                <span class="text-sm text-blue-100">الوقت:</span>
+            <div class="game-panel py-2 px-4">
+                <span class="text-sm text-purple-200">الوقت:</span>
                 <span id="time-display" class="font-bold text-white">30</span>
             </div>
         </div>
@@ -156,30 +206,30 @@ html
             <div id="timer-bar" class="timer-bar absolute top-0 left-0 h-full bg-green-500 rounded-full" style="width: 100%;"></div>
         </div>
         
-        <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-6 mb-6">
+        <div class="game-panel p-6 mb-6">
             <div id="typing-text" class="text-xl md:text-2xl text-white leading-relaxed mb-6 h-32 overflow-y-auto"></div>
             <input type="text" id="typing-input" class="typing-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-            <div class="bg-white bg-opacity-10 rounded-lg p-4 flex justify-between items-center">
+            <div class="stat-card p-4 flex justify-between items-center">
                 <div>
-                    <span class="text-sm text-blue-100">السرعة:</span>
+                    <span class="text-sm text-purple-200">السرعة:</span>
                     <span id="speed" class="font-bold text-white">0 كلمة/دقيقة</span>
                 </div>
                 <div>
-                    <span class="text-sm text-blue-100">الدقة:</span>
+                    <span class="text-sm text-purple-200">الدقة:</span>
                     <span id="accuracy" class="font-bold text-white">100%</span>
                 </div>
                 <div>
-                    <span class="text-sm text-blue-100">الأخطاء:</span>
+                    <span class="text-sm text-purple-200">الأخطاء:</span>
                     <span id="errors" class="font-bold text-white">0</span>
                 </div>
             </div>
         </div>
         
         <div class="flex justify-between">
-            <button id="restart-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-all">
+            <button id="restart-btn" class="btn-primary font-medium py-2 px-6 rounded-lg">
                 إعادة المحاولة
             </button>
-            <button id="quit-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-6 rounded-lg transition-all">
+            <button id="quit-btn" class="btn-secondary font-medium py-2 px-6 rounded-lg">
                 العودة للقائمة
             </button>
         </div>
@@ -187,36 +237,36 @@ html
     
     <!-- شاشة النتائج -->
     <div id="result-screen" class="hidden fade-in">
-        <div class="bg-white bg-opacity-20 rounded-lg p-6 mb-6 text-center">
+        <div class="game-panel p-6 mb-6 text-center">
             <h2 class="text-2xl font-bold text-white mb-2">انتهى التحدي!</h2>
-            <p id="result-message" class="text-xl text-blue-100 mb-6">أحسنت! لقد أكملت التحدي بنجاح.</p>
+            <p id="result-message" class="text-xl text-purple-200 mb-6">أحسنت! لقد أكملت التحدي بنجاح.</p>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="bg-white bg-opacity-10 rounded-lg p-4">
-                    <h3 class="font-medium text-blue-100 mb-1">متوسط السرعة</h3>
+                <div class="stat-card p-4">
+                    <h3 class="font-medium text-purple-200 mb-1">متوسط السرعة</h3>
                     <p id="final-speed" class="text-2xl font-bold text-yellow-300">0 كلمة/دقيقة</p>
                 </div>
-                <div class="bg-white bg-opacity-10 rounded-lg p-4">
-                    <h3 class="font-medium text-blue-100 mb-1">متوسط الدقة</h3>
+                <div class="stat-card p-4">
+                    <h3 class="font-medium text-purple-200 mb-1">متوسط الدقة</h3>
                     <p id="final-accuracy" class="text-2xl font-bold text-yellow-300">0%</p>
                 </div>
-                <div class="bg-white bg-opacity-10 rounded-lg p-4">
-                    <h3 class="font-medium text-blue-100 mb-1">إجمالي الأخطاء</h3>
+                <div class="stat-card p-4">
+                    <h3 class="font-medium text-purple-200 mb-1">إجمالي الأخطاء</h3>
                     <p id="final-errors" class="text-2xl font-bold text-yellow-300">0</p>
                 </div>
             </div>
             
             <div class="flex flex-col md:flex-row gap-4 justify-center">
-                <button id="play-again-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all">
+                <button id="play-again-btn" class="btn-success font-bold py-3 px-6 rounded-lg">
                     العب مرة أخرى
                 </button>
-                <button id="home-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all">
+                <button id="home-btn" class="btn-primary font-bold py-3 px-6 rounded-lg">
                     العودة للقائمة الرئيسية
                 </button>
             </div>
         </div>
         
-        <div class="bg-white bg-opacity-20 rounded-lg p-6">
+        <div class="game-panel p-6">
             <h2 class="text-xl font-bold text-white mb-4">تفاصيل الأداء</h2>
             <div id="performance-details" class="space-y-4">
                 <!-- سيتم ملء هذا القسم ديناميكيًا -->
@@ -549,6 +599,7 @@ html
             });
             
             // تحديث حالة كل حرف
+            let errorCount = 0;
             for (let i = 0; i < typedValue.length; i++) {
                 if (i < chars.length) {
                     if (i < sentence.length) {
@@ -556,7 +607,7 @@ html
                             chars[i].className = 'correct';
                         } else {
                             chars[i].className = 'incorrect';
-                            errors++;
+                            errorCount++;
                         }
                     }
                 }
@@ -568,6 +619,7 @@ html
             }
             
             // تحديث عداد الأخطاء
+            errors = errorCount;
             errorsElement.textContent = errors;
         }
         
@@ -648,7 +700,7 @@ html
             performanceDetails.innerHTML = '';
             sentencePerformance.forEach((perf, index) => {
                 const sentenceResult = document.createElement('div');
-                sentenceResult.className = 'bg-white bg-opacity-10 rounded-lg p-3';
+                sentenceResult.className = 'stat-card p-3 mb-3';
                 
                 const sentenceHeader = document.createElement('div');
                 sentenceHeader.className = 'flex justify-between items-center mb-2';
@@ -665,23 +717,23 @@ html
                 sentenceHeader.appendChild(sentenceStatus);
                 
                 const sentenceText = document.createElement('p');
-                sentenceText.className = 'text-blue-100 text-sm mb-2';
+                sentenceText.className = 'text-purple-200 text-sm mb-2';
                 sentenceText.textContent = perf.sentence.length > 50 ? perf.sentence.substring(0, 50) + '...' : perf.sentence;
                 
                 const sentenceStats = document.createElement('div');
                 sentenceStats.className = 'grid grid-cols-3 gap-2 text-center text-xs';
                 
                 const speedStat = document.createElement('div');
-                speedStat.className = 'bg-white bg-opacity-5 rounded p-1';
-                speedStat.innerHTML = `<span class="text-blue-200">السرعة:</span> <span class="text-white font-medium">${perf.speed} كلمة/دقيقة</span>`;
+                speedStat.className = 'bg-white bg-opacity-10 rounded p-1';
+                speedStat.innerHTML = `<span class="text-purple-200">السرعة:</span> <span class="text-white font-medium">${perf.speed} كلمة/دقيقة</span>`;
                 
                 const accuracyStat = document.createElement('div');
-                accuracyStat.className = 'bg-white bg-opacity-5 rounded p-1';
-                accuracyStat.innerHTML = `<span class="text-blue-200">الدقة:</span> <span class="text-white font-medium">${perf.accuracy}%</span>`;
+                accuracyStat.className = 'bg-white bg-opacity-10 rounded p-1';
+                accuracyStat.innerHTML = `<span class="text-purple-200">الدقة:</span> <span class="text-white font-medium">${perf.accuracy}%</span>`;
                 
                 const errorsStat = document.createElement('div');
-                errorsStat.className = 'bg-white bg-opacity-5 rounded p-1';
-                errorsStat.innerHTML = `<span class="text-blue-200">الأخطاء:</span> <span class="text-white font-medium">${perf.errors}</span>`;
+                errorsStat.className = 'bg-white bg-opacity-10 rounded p-1';
+                errorsStat.innerHTML = `<span class="text-purple-200">الأخطاء:</span> <span class="text-white font-medium">${perf.errors}</span>`;
                 
                 sentenceStats.appendChild(speedStat);
                 sentenceStats.appendChild(accuracyStat);
