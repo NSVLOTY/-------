@@ -1,0 +1,752 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.tailwindcss.com"></script>
+
+html
+    body {
+        font-family: 'Tajawal', sans-serif;
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        height: 100vh;
+        direction: rtl;
+    }
+    
+    .typing-text::-webkit-scrollbar {
+        width: 0;
+    }
+    
+    .correct {
+        color: #10b981;
+    }
+    
+    .incorrect {
+        color: #ef4444;
+        text-decoration: underline;
+        text-decoration-color: #ef4444;
+    }
+    
+    .current {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+    }
+    
+    .typing-input {
+        opacity: 0;
+        position: absolute;
+        z-index: -999;
+    }
+    
+    .difficulty-btn.active {
+        background-color: #1d4ed8;
+        color: white;
+    }
+    
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: #f59e0b;
+        border-radius: 50%;
+        animation: fall 3s ease-in-out infinite;
+    }
+    
+    @keyframes fall {
+        0% {
+            transform: translateY(-100px) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+    
+    .pulse {
+        animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .timer-bar {
+        transition: width 0.1s linear;
+    }
+</style>
+    <!-- شاشة البداية -->
+    <div id="start-screen" class="fade-in">
+        <div class="bg-white bg-opacity-20 rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-bold text-white mb-4">اختر مستوى الصعوبة</h2>
+            <div class="flex flex-wrap gap-3 mb-6">
+                <button class="difficulty-btn bg-white bg-opacity-30 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all active" data-difficulty="سهل">سهل</button>
+                <button class="difficulty-btn bg-white bg-opacity-30 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all" data-difficulty="متوسط">متوسط</button>
+                <button class="difficulty-btn bg-white bg-opacity-30 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all" data-difficulty="صعب">صعب</button>
+                <button class="difficulty-btn bg-white bg-opacity-30 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all" data-difficulty="خبير">خبير</button>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-medium text-white mb-2">تعليمات اللعبة:</h3>
+                <ul class="text-blue-100 list-disc list-inside space-y-1">
+                    <li>اكتب النص المعروض بأسرع ما يمكن وبدقة عالية</li>
+                    <li>سيتم احتساب الوقت والدقة لكل جملة</li>
+                    <li>كلما زادت الصعوبة، زادت صعوبة النصوص وقل الوقت المتاح</li>
+                    <li>انقر على زر البدء للبدء في التحدي</li>
+                </ul>
+            </div>
+            
+            <button id="start-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all pulse">
+                ابدأ التحدي
+            </button>
+        </div>
+        
+        <div class="bg-white bg-opacity-20 rounded-lg p-6">
+            <h2 class="text-xl font-bold text-white mb-4">أفضل النتائج</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                    <h3 class="font-medium text-white mb-2">السرعة</h3>
+                    <p id="best-speed" class="text-2xl font-bold text-yellow-300">0 كلمة/دقيقة</p>
+                </div>
+                <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                    <h3 class="font-medium text-white mb-2">الدقة</h3>
+                    <p id="best-accuracy" class="text-2xl font-bold text-yellow-300">0%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- شاشة اللعب -->
+    <div id="game-screen" class="hidden fade-in">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center gap-4">
+                <div class="bg-white bg-opacity-20 rounded-lg py-2 px-4">
+                    <span class="text-sm text-blue-100">المستوى:</span>
+                    <span id="difficulty-display" class="font-bold text-white">سهل</span>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-lg py-2 px-4">
+                    <span class="text-sm text-blue-100">الجملة:</span>
+                    <span id="sentence-count" class="font-bold text-white">1/10</span>
+                </div>
+            </div>
+            <div class="bg-white bg-opacity-20 rounded-lg py-2 px-4">
+                <span class="text-sm text-blue-100">الوقت:</span>
+                <span id="time-display" class="font-bold text-white">30</span>
+            </div>
+        </div>
+        
+        <div class="relative w-full bg-gray-700 bg-opacity-40 h-2 rounded-full mb-6">
+            <div id="timer-bar" class="timer-bar absolute top-0 left-0 h-full bg-green-500 rounded-full" style="width: 100%;"></div>
+        </div>
+        
+        <div class="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-6 mb-6">
+            <div id="typing-text" class="text-xl md:text-2xl text-white leading-relaxed mb-6 h-32 overflow-y-auto"></div>
+            <input type="text" id="typing-input" class="typing-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <div class="bg-white bg-opacity-10 rounded-lg p-4 flex justify-between items-center">
+                <div>
+                    <span class="text-sm text-blue-100">السرعة:</span>
+                    <span id="speed" class="font-bold text-white">0 كلمة/دقيقة</span>
+                </div>
+                <div>
+                    <span class="text-sm text-blue-100">الدقة:</span>
+                    <span id="accuracy" class="font-bold text-white">100%</span>
+                </div>
+                <div>
+                    <span class="text-sm text-blue-100">الأخطاء:</span>
+                    <span id="errors" class="font-bold text-white">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-between">
+            <button id="restart-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-all">
+                إعادة المحاولة
+            </button>
+            <button id="quit-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-6 rounded-lg transition-all">
+                العودة للقائمة
+            </button>
+        </div>
+    </div>
+    
+    <!-- شاشة النتائج -->
+    <div id="result-screen" class="hidden fade-in">
+        <div class="bg-white bg-opacity-20 rounded-lg p-6 mb-6 text-center">
+            <h2 class="text-2xl font-bold text-white mb-2">انتهى التحدي!</h2>
+            <p id="result-message" class="text-xl text-blue-100 mb-6">أحسنت! لقد أكملت التحدي بنجاح.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                    <h3 class="font-medium text-blue-100 mb-1">متوسط السرعة</h3>
+                    <p id="final-speed" class="text-2xl font-bold text-yellow-300">0 كلمة/دقيقة</p>
+                </div>
+                <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                    <h3 class="font-medium text-blue-100 mb-1">متوسط الدقة</h3>
+                    <p id="final-accuracy" class="text-2xl font-bold text-yellow-300">0%</p>
+                </div>
+                <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                    <h3 class="font-medium text-blue-100 mb-1">إجمالي الأخطاء</h3>
+                    <p id="final-errors" class="text-2xl font-bold text-yellow-300">0</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button id="play-again-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all">
+                    العب مرة أخرى
+                </button>
+                <button id="home-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all">
+                    العودة للقائمة الرئيسية
+                </button>
+            </div>
+        </div>
+        
+        <div class="bg-white bg-opacity-20 rounded-lg p-6">
+            <h2 class="text-xl font-bold text-white mb-4">تفاصيل الأداء</h2>
+            <div id="performance-details" class="space-y-4">
+                <!-- سيتم ملء هذا القسم ديناميكيًا -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // العناصر الرئيسية
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const quitBtn = document.getElementById('quit-btn');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const homeBtn = document.getElementById('home-btn');
+        const typingText = document.getElementById('typing-text');
+        const typingInput = document.getElementById('typing-input');
+        const difficultyDisplay = document.getElementById('difficulty-display');
+        const sentenceCount = document.getElementById('sentence-count');
+        const timeDisplay = document.getElementById('time-display');
+        const timerBar = document.getElementById('timer-bar');
+        const speedElement = document.getElementById('speed');
+        const accuracyElement = document.getElementById('accuracy');
+        const errorsElement = document.getElementById('errors');
+        const finalSpeed = document.getElementById('final-speed');
+        const finalAccuracy = document.getElementById('final-accuracy');
+        const finalErrors = document.getElementById('final-errors');
+        const resultMessage = document.getElementById('result-message');
+        const performanceDetails = document.getElementById('performance-details');
+        const bestSpeed = document.getElementById('best-speed');
+        const bestAccuracy = document.getElementById('best-accuracy');
+        
+        // متغيرات اللعبة
+        let currentDifficulty = 'سهل';
+        let sentences = [];
+        let currentSentenceIndex = 0;
+        let totalSentences = 10;
+        let timeLeft = 0;
+        let timer = null;
+        let startTime = 0;
+        let errors = 0;
+        let totalTyped = 0;
+        let isTyping = false;
+        let sentencePerformance = [];
+        let currentWordIndex = 0;
+        let currentCharIndex = 0;
+        
+        // قواعد البيانات للنصوص حسب مستوى الصعوبة
+        const sentencesDB = {
+            'سهل': [
+                'القراءة هي غذاء العقل والروح.',
+                'العلم نور والجهل ظلام.',
+                'من جد وجد ومن زرع حصد.',
+                'الصدق منجاة والكذب مهلكة.',
+                'الوقت كالسيف إن لم تقطعه قطعك.',
+                'خير الكلام ما قل ودل.',
+                'العقل السليم في الجسم السليم.',
+                'يد واحدة لا تصفق.',
+                'الصبر مفتاح الفرج.',
+                'الكتاب خير جليس في الزمان.',
+                'الأدب خير ميراث.',
+                'الصديق وقت الضيق.',
+                'المال خادم جيد وسيد رديء.',
+                'الصحة تاج على رؤوس الأصحاء.',
+                'الأم مدرسة إذا أعددتها أعددت شعبا طيب الأعراق.'
+            ],
+            'متوسط': [
+                'التكنولوجيا الحديثة غيرت أسلوب حياتنا بشكل كبير وأصبحت جزءا لا يتجزأ من يومنا.',
+                'الثقافة هي ما يبقى في الذاكرة بعد نسيان كل ما تعلمناه في المدرسة.',
+                'الإنترنت أصبح وسيلة أساسية للتواصل ونشر المعلومات في عصرنا الحديث.',
+                'الاقتصاد العالمي يتأثر بالعديد من العوامل السياسية والاجتماعية المتغيرة.',
+                'الفن هو تعبير عن الذات وانعكاس للثقافة والمجتمع الذي ينتمي إليه الفنان.',
+                'التغير المناخي يعتبر من أكبر التحديات التي تواجه البشرية في القرن الحادي والعشرين.',
+                'الرياضة تساهم في بناء الجسم السليم وتعزيز الصحة النفسية والبدنية للإنسان.',
+                'القراءة تفتح آفاقا جديدة وتوسع مدارك الإنسان وتنمي قدراته الفكرية والإبداعية.',
+                'التعليم هو أساس تقدم الأمم وازدهارها وبناء مستقبل أفضل للأجيال القادمة.',
+                'الذكاء الاصطناعي أصبح جزءا مهما من التطور التكنولوجي في مختلف المجالات.',
+                'السفر يوسع المدارك ويعرفنا على ثقافات وحضارات مختلفة حول العالم.',
+                'الموسيقى لغة عالمية تتخطى حدود اللغات والثقافات وتصل إلى قلوب الناس.',
+                'الصحافة هي السلطة الرابعة التي تراقب وتنقل الأحداث وتشكل الرأي العام.',
+                'التسامح قيمة إنسانية عظيمة تساعد على بناء مجتمعات متماسكة ومتحابة.',
+                'الإبداع هو القدرة على رؤية ما لا يراه الآخرون وتحويل الأفكار إلى واقع ملموس.'
+            ],
+            'صعب': [
+                'تعتبر الثورة الصناعية الرابعة نقلة نوعية في تاريخ البشرية، حيث أدت إلى دمج التكنولوجيا في مختلف جوانب الحياة بشكل غير مسبوق.',
+                'الاستدامة البيئية أصبحت ضرورة ملحة في ظل التغيرات المناخية المتسارعة والتي تهدد مستقبل كوكب الأرض والأجيال القادمة.',
+                'الذكاء الاصطناعي يفتح آفاقاً جديدة في مجالات الطب والتعليم والصناعة، لكنه يثير تساؤلات أخلاقية حول مستقبل العمل البشري.',
+                'تلعب وسائل التواصل الاجتماعي دوراً محورياً في تشكيل الرأي العام وصناعة التوجهات الفكرية والسياسية في المجتمعات المعاصرة.',
+                'الاقتصاد المعرفي يعتمد على الابتكار والإبداع والبحث العلمي كركائز أساسية للتنمية المستدامة في القرن الحادي والعشرين.',
+                'التنوع الثقافي يعد ثروة إنسانية يجب الحفاظ عليها وتعزيزها من خلال الحوار والتبادل الثقافي بين مختلف شعوب العالم.',
+                'الأمن السيبراني أصبح من أهم التحديات التي تواجه الدول والمؤسسات في ظل الاعتماد المتزايد على التكنولوجيا الرقمية.',
+                'الفلسفة تسعى إلى فهم الوجود والمعرفة والقيم من خلال التفكير النقدي والتأمل العميق في مختلف جوانب الحياة الإنسانية.',
+                'العولمة أدت إلى تقارب الثقافات وتداخل المصالح الاقتصادية والسياسية بين دول العالم بشكل لم يسبق له مثيل في التاريخ.',
+                'الطاقة المتجددة تمثل الحل الأمثل لمشكلة نضوب الموارد الطبيعية وتلوث البيئة الناتج عن استخدام الوقود الأحفوري.',
+                'التطور التكنولوجي المتسارع يفرض تحديات جديدة على النظم التعليمية التقليدية ويستدعي إعادة النظر في أساليب التعليم ومناهجه.',
+                'الهندسة الوراثية فتحت آفاقاً جديدة في مجال الطب والزراعة، لكنها أثارت جدلاً واسعاً حول الحدود الأخلاقية للتدخل في الطبيعة البشرية.',
+                'الديمقراطية تعتبر من أرقى أشكال الحكم التي توصلت إليها البشرية، لكنها تواجه تحديات كبيرة في ظل صعود الشعبوية والاستقطاب السياسي.',
+                'الفن المعاصر يعكس تعقيدات الحياة الحديثة ويسعى إلى كسر القوالب التقليدية والبحث عن أشكال جديدة للتعبير عن الواقع الإنساني.',
+                'الفلسفة السياسية تبحث في أسس الحكم العادل وعلاقة الفرد بالدولة وحدود الحرية والسلطة في المجتمعات الإنسانية.'
+            ],
+            'خبير': [
+                'تتجلى أهمية الفلسفة التحليلية في قدرتها على تفكيك المفاهيم المعقدة وإخضاعها للتحليل المنطقي الدقيق، مما يساهم في توضيح الالتباسات اللغوية التي قد تؤدي إلى سوء الفهم في مختلف المجالات المعرفية.',
+                'الاستشراق كظاهرة ثقافية وأكاديمية لعب دوراً محورياً في تشكيل الصورة النمطية عن الشرق في المخيال الغربي، وقد تعرض لنقد جذري من قبل المفكرين ما بعد الكولونياليين الذين كشفوا عن علاقات القوة الكامنة وراء الخطاب الاستشراقي.',
+                'تعتبر نظرية الأوتار الفائقة من أكثر النظريات الفيزيائية طموحاً في محاولتها توحيد قوانين الفيزياء الكمية مع النسبية العامة، رغم التحديات الرياضية الهائلة والصعوبات التجريبية التي تواجه التحقق من صحتها.',
+                'الهيرمينوطيقا كنظرية في التأويل تتجاوز مجرد فهم النصوص إلى استكشاف العلاقة الجدلية بين المفسر والنص والسياق التاريخي، مما يفتح آفاقاً جديدة لفهم التراث الإنساني بمختلف تجلياته الثقافية والفكرية.',
+                'تشكل الثورة الإبستمولوجية التي أحدثها توماس كون في فلسفة العلم منعطفاً حاسماً في فهم تطور المعرفة العلمية، حيث أبرزت دور النماذج الإرشادية والعوامل الاجتماعية والتاريخية في تشكيل النظريات العلمية.',
+                'الميتافيزيقا المعاصرة تسعى إلى إعادة صياغة الأسئلة الوجودية الكبرى في ضوء التطورات العلمية الحديثة، متجاوزة النقد الوضعي الذي اعتبرها ضرباً من الكلام الفارغ الذي لا يمكن التحقق منه تجريبياً.',
+                'تمثل الفينومينولوجيا منهجاً فلسفياً يسعى إلى وصف الظواهر كما تتجلى للوعي مباشرة، متجاوزاً الافتراضات المسبقة والنظريات الجاهزة، مما يفتح المجال لفهم أعمق للتجربة الإنسانية في مختلف أبعادها.',
+                'الأنثروبولوجيا البنيوية قدمت رؤية جديدة لفهم الثقافات الإنسانية من خلال الكشف عن البنى العميقة والأنساق الرمزية التي تحكم الممارسات الاجتماعية والثقافية رغم تنوعها الظاهري.',
+                'تطرح الإشكاليات البيوأخلاقية المعاصرة تحديات غير مسبوقة أمام الفلسفة الأخلاقية التقليدية، خاصة في ظل التطورات المتسارعة في مجالات الهندسة الوراثية والذكاء الاصطناعي والتقنيات الطبية الحديثة.',
+                'النظرية النقدية لمدرسة فرانكفورت قدمت تحليلاً عميقاً للعقلانية الأداتية التي تهيمن على المجتمعات الصناعية المتقدمة، كاشفة عن التناقضات الداخلية للحداثة وآثارها السلبية على الحياة الإنسانية.',
+                'تعكس الفلسفة التفكيكية جاك دريدا تحولاً جذرياً في فهم اللغة والنصوص، حيث تكشف عن التناقضات الداخلية والثنائيات الهرمية التي تحكم الخطاب الفلسفي الغربي منذ أفلاطون.',
+                'الإبستمولوجيا التطورية تقدم مقاربة جديدة لفهم المعرفة البشرية من خلال ربطها بالتطور البيولوجي للجنس البشري، معتبرة أن آليات المعرفة هي نتاج للانتقاء الطبيعي عبر ملايين السنين.',
+                'تمثل نظرية العدالة لجون رولز محاولة طموحة لإعادة صياغة الفلسفة السياسية الليبرالية على أسس تعاقدية جديدة، متجاوزة النفعية الكلاسيكية ومستعيدة مفهوم العقد الاجتماعي بصيغة معاصرة.',
+                'الهرمنيوطيقا الفلسفية لغادامير تتجاوز مجرد تقديم منهجية لتفسير النصوص إلى استكشاف الشروط الأنطولوجية للفهم ذاته، معتبرة أن التأويل هو الطريقة الأساسية لوجود الإنسان في العالم.',
+                'تطرح ما بعد الحداثة تحدياً جذرياً للسرديات الكبرى التي هيمنت على الفكر الغربي، مشككة في مفاهيم التقدم والعقلانية والحقيقة المطلقة، ومنادية بالتعددية والاختلاف كبديل عن النزعة الشمولية للحداثة.'
+            ]
+        };
+        
+        // إعدادات الصعوبة (الوقت بالثواني لكل جملة)
+        const difficultySettings = {
+            'سهل': 30,
+            'متوسط': 25,
+            'صعب': 20,
+            'خبير': 15
+        };
+        
+        // تحميل أفضل النتائج من التخزين المحلي
+        function loadBestScores() {
+            const savedSpeed = localStorage.getItem('bestSpeed');
+            const savedAccuracy = localStorage.getItem('bestAccuracy');
+            
+            if (savedSpeed) {
+                bestSpeed.textContent = savedSpeed + ' كلمة/دقيقة';
+            }
+            
+            if (savedAccuracy) {
+                bestAccuracy.textContent = savedAccuracy + '%';
+            }
+        }
+        
+        // حفظ أفضل النتائج
+        function saveBestScores(speed, accuracy) {
+            const currentBestSpeed = parseInt(localStorage.getItem('bestSpeed') || '0');
+            const currentBestAccuracy = parseInt(localStorage.getItem('bestAccuracy') || '0');
+            
+            if (speed > currentBestSpeed) {
+                localStorage.setItem('bestSpeed', speed);
+                bestSpeed.textContent = speed + ' كلمة/دقيقة';
+            }
+            
+            if (accuracy > currentBestAccuracy) {
+                localStorage.setItem('bestAccuracy', accuracy);
+                bestAccuracy.textContent = accuracy + '%';
+            }
+        }
+        
+        // اختيار مستوى الصعوبة
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                difficultyBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentDifficulty = this.getAttribute('data-difficulty');
+            });
+        });
+        
+        // بدء اللعبة
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', restartGame);
+        quitBtn.addEventListener('click', quitGame);
+        playAgainBtn.addEventListener('click', restartGame);
+        homeBtn.addEventListener('click', quitGame);
+        
+        // تحميل أفضل النتائج عند بدء التطبيق
+        loadBestScores();
+        
+        // بدء اللعبة
+        function startGame() {
+            // اختيار الجمل العشوائية
+            sentences = getRandomSentences(sentencesDB[currentDifficulty], totalSentences);
+            currentSentenceIndex = 0;
+            sentencePerformance = [];
+            
+            // تحديث العرض
+            difficultyDisplay.textContent = currentDifficulty;
+            sentenceCount.textContent = `1/${totalSentences}`;
+            
+            // إعداد الجملة الأولى
+            setupSentence();
+            
+            // إظهار شاشة اللعب
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+            
+            // التركيز على حقل الإدخال
+            typingInput.focus();
+        }
+        
+        // إعداد الجملة الحالية
+        function setupSentence() {
+            const sentence = sentences[currentSentenceIndex];
+            
+            // تقسيم الجملة إلى كلمات
+            const words = sentence.split(' ');
+            typingText.innerHTML = '';
+            
+            // إنشاء عناصر span لكل كلمة وحرف
+            words.forEach((word, wordIndex) => {
+                const wordSpan = document.createElement('span');
+                wordSpan.className = 'word';
+                
+                // إضافة مسافة بعد كل كلمة إلا الأخيرة
+                const wordWithSpace = wordIndex === words.length - 1 ? word : word + ' ';
+                
+                // إنشاء span لكل حرف
+                [...wordWithSpace].forEach((char, charIndex) => {
+                    const charSpan = document.createElement('span');
+                    charSpan.textContent = char;
+                    
+                    // تحديد الحرف الأول في الجملة الأولى
+                    if (wordIndex === 0 && charIndex === 0) {
+                        charSpan.className = 'current';
+                    }
+                    
+                    wordSpan.appendChild(charSpan);
+                });
+                
+                typingText.appendChild(wordSpan);
+            });
+            
+            // إعادة تعيين المتغيرات
+            currentWordIndex = 0;
+            currentCharIndex = 0;
+            errors = 0;
+            totalTyped = 0;
+            errorsElement.textContent = '0';
+            accuracyElement.textContent = '100%';
+            speedElement.textContent = '0 كلمة/دقيقة';
+            
+            // بدء المؤقت
+            timeLeft = difficultySettings[currentDifficulty];
+            timeDisplay.textContent = timeLeft;
+            timerBar.style.width = '100%';
+            
+            if (timer) {
+                clearInterval(timer);
+            }
+            
+            timer = setInterval(updateTimer, 1000);
+            startTime = new Date().getTime();
+            isTyping = true;
+            
+            // إعادة تعيين حقل الإدخال
+            typingInput.value = '';
+            typingInput.focus();
+        }
+        
+        // تحديث المؤقت
+        function updateTimer() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                timeDisplay.textContent = timeLeft;
+                const percentage = (timeLeft / difficultySettings[currentDifficulty]) * 100;
+                timerBar.style.width = percentage + '%';
+                
+                // تغيير لون شريط الوقت حسب الوقت المتبقي
+                if (percentage > 60) {
+                    timerBar.className = 'timer-bar absolute top-0 left-0 h-full bg-green-500 rounded-full';
+                } else if (percentage > 30) {
+                    timerBar.className = 'timer-bar absolute top-0 left-0 h-full bg-yellow-500 rounded-full';
+                } else {
+                    timerBar.className = 'timer-bar absolute top-0 left-0 h-full bg-red-500 rounded-full';
+                }
+            } else {
+                // انتهاء الوقت
+                clearInterval(timer);
+                finishSentence(false);
+            }
+        }
+        
+        // معالجة الإدخال
+        typingInput.addEventListener('input', function(e) {
+            if (!isTyping) return;
+            
+            const sentence = sentences[currentSentenceIndex];
+            const typedValue = e.target.value;
+            
+            // تحديث السرعة والدقة
+            totalTyped = typedValue.length;
+            const words = sentence.split(' ');
+            const totalWords = typedValue.trim().split(/\s+/).length;
+            const elapsedTime = (new Date().getTime() - startTime) / 60000; // بالدقائق
+            const speed = Math.round(totalWords / elapsedTime) || 0;
+            
+            speedElement.textContent = `${speed} كلمة/دقيقة`;
+            
+            // تحديث الأخطاء والدقة
+            let correctChars = 0;
+            for (let i = 0; i < typedValue.length; i++) {
+                if (i < sentence.length && typedValue[i] === sentence[i]) {
+                    correctChars++;
+                }
+            }
+            
+            const accuracy = Math.floor((correctChars / totalTyped) * 100) || 100;
+            accuracyElement.textContent = `${accuracy}%`;
+            
+            // تحديث عرض النص
+            updateTextDisplay(typedValue, sentence);
+            
+            // التحقق من اكتمال الجملة
+            if (typedValue === sentence) {
+                finishSentence(true);
+            }
+        });
+        
+        // تحديث عرض النص أثناء الكتابة
+        function updateTextDisplay(typedValue, sentence) {
+            const chars = typingText.querySelectorAll('span span');
+            
+            // إعادة تعيين جميع الأحرف
+            chars.forEach(char => {
+                char.className = '';
+            });
+            
+            // تحديث حالة كل حرف
+            for (let i = 0; i < typedValue.length; i++) {
+                if (i < chars.length) {
+                    if (i < sentence.length) {
+                        if (typedValue[i] === sentence[i]) {
+                            chars[i].className = 'correct';
+                        } else {
+                            chars[i].className = 'incorrect';
+                            errors++;
+                        }
+                    }
+                }
+            }
+            
+            // تحديد الحرف الحالي
+            if (typedValue.length < chars.length) {
+                chars[typedValue.length].className = 'current';
+            }
+            
+            // تحديث عداد الأخطاء
+            errorsElement.textContent = errors;
+        }
+        
+        // إنهاء الجملة الحالية
+        function finishSentence(completed) {
+            clearInterval(timer);
+            isTyping = false;
+            
+            // حساب الأداء
+            const sentence = sentences[currentSentenceIndex];
+            const elapsedTime = (new Date().getTime() - startTime) / 60000; // بالدقائق
+            const words = sentence.split(' ').length;
+            const speed = Math.round(words / elapsedTime) || 0;
+            const accuracy = Math.floor(((totalTyped - errors) / totalTyped) * 100) || 0;
+            
+            // حفظ أداء الجملة
+            sentencePerformance.push({
+                sentence: sentence,
+                speed: speed,
+                accuracy: accuracy,
+                errors: errors,
+                completed: completed
+            });
+            
+            // الانتقال إلى الجملة التالية أو إنهاء اللعبة
+            currentSentenceIndex++;
+            
+            if (currentSentenceIndex < totalSentences) {
+                sentenceCount.textContent = `${currentSentenceIndex + 1}/${totalSentences}`;
+                setupSentence();
+            } else {
+                showResults();
+            }
+        }
+        
+        // عرض النتائج النهائية
+        function showResults() {
+            gameScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            // حساب متوسط الأداء
+            let totalSpeed = 0;
+            let totalAccuracy = 0;
+            let totalErrors = 0;
+            let completedSentences = 0;
+            
+            sentencePerformance.forEach(perf => {
+                totalSpeed += perf.speed;
+                totalAccuracy += perf.accuracy;
+                totalErrors += perf.errors;
+                if (perf.completed) completedSentences++;
+            });
+            
+            const avgSpeed = Math.round(totalSpeed / sentencePerformance.length);
+            const avgAccuracy = Math.round(totalAccuracy / sentencePerformance.length);
+            
+            // عرض النتائج
+            finalSpeed.textContent = `${avgSpeed} كلمة/دقيقة`;
+            finalAccuracy.textContent = `${avgAccuracy}%`;
+            finalErrors.textContent = totalErrors;
+            
+            // رسالة النتيجة
+            if (completedSentences === totalSentences) {
+                if (avgAccuracy > 90) {
+                    resultMessage.textContent = 'ممتاز! أداء رائع جداً!';
+                    createConfetti();
+                } else if (avgAccuracy > 75) {
+                    resultMessage.textContent = 'جيد جداً! يمكنك التحسن أكثر!';
+                } else {
+                    resultMessage.textContent = 'حسناً! استمر في التدريب لتحسين دقتك.';
+                }
+            } else {
+                const completionRate = Math.round((completedSentences / totalSentences) * 100);
+                resultMessage.textContent = `أكملت ${completionRate}% من التحدي. حاول مرة أخرى!`;
+            }
+            
+            // عرض تفاصيل الأداء لكل جملة
+            performanceDetails.innerHTML = '';
+            sentencePerformance.forEach((perf, index) => {
+                const sentenceResult = document.createElement('div');
+                sentenceResult.className = 'bg-white bg-opacity-10 rounded-lg p-3';
+                
+                const sentenceHeader = document.createElement('div');
+                sentenceHeader.className = 'flex justify-between items-center mb-2';
+                
+                const sentenceTitle = document.createElement('h3');
+                sentenceTitle.className = 'font-medium text-white';
+                sentenceTitle.textContent = `الجملة ${index + 1}`;
+                
+                const sentenceStatus = document.createElement('span');
+                sentenceStatus.className = perf.completed ? 'text-green-400 text-sm' : 'text-red-400 text-sm';
+                sentenceStatus.textContent = perf.completed ? 'مكتملة' : 'غير مكتملة';
+                
+                sentenceHeader.appendChild(sentenceTitle);
+                sentenceHeader.appendChild(sentenceStatus);
+                
+                const sentenceText = document.createElement('p');
+                sentenceText.className = 'text-blue-100 text-sm mb-2';
+                sentenceText.textContent = perf.sentence.length > 50 ? perf.sentence.substring(0, 50) + '...' : perf.sentence;
+                
+                const sentenceStats = document.createElement('div');
+                sentenceStats.className = 'grid grid-cols-3 gap-2 text-center text-xs';
+                
+                const speedStat = document.createElement('div');
+                speedStat.className = 'bg-white bg-opacity-5 rounded p-1';
+                speedStat.innerHTML = `<span class="text-blue-200">السرعة:</span> <span class="text-white font-medium">${perf.speed} كلمة/دقيقة</span>`;
+                
+                const accuracyStat = document.createElement('div');
+                accuracyStat.className = 'bg-white bg-opacity-5 rounded p-1';
+                accuracyStat.innerHTML = `<span class="text-blue-200">الدقة:</span> <span class="text-white font-medium">${perf.accuracy}%</span>`;
+                
+                const errorsStat = document.createElement('div');
+                errorsStat.className = 'bg-white bg-opacity-5 rounded p-1';
+                errorsStat.innerHTML = `<span class="text-blue-200">الأخطاء:</span> <span class="text-white font-medium">${perf.errors}</span>`;
+                
+                sentenceStats.appendChild(speedStat);
+                sentenceStats.appendChild(accuracyStat);
+                sentenceStats.appendChild(errorsStat);
+                
+                sentenceResult.appendChild(sentenceHeader);
+                sentenceResult.appendChild(sentenceText);
+                sentenceResult.appendChild(sentenceStats);
+                
+                performanceDetails.appendChild(sentenceResult);
+            });
+            
+            // حفظ أفضل النتائج
+            saveBestScores(avgSpeed, avgAccuracy);
+        }
+        
+        // إعادة تشغيل اللعبة
+        function restartGame() {
+            startGame();
+        }
+        
+        // العودة إلى القائمة الرئيسية
+        function quitGame() {
+            if (timer) {
+                clearInterval(timer);
+            }
+            
+            gameScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+        
+        // الحصول على جمل عشوائية
+        function getRandomSentences(sentencesArray, count) {
+            const shuffled = [...sentencesArray].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+        
+        // إنشاء تأثير الاحتفال
+        function createConfetti() {
+            const confettiCount = 100;
+            const colors = ['#f59e0b', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6'];
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+        
+        // التعامل مع أحداث لوحة المفاتيح
+        document.addEventListener('keydown', function(e) {
+            // التركيز على حقل الإدخال عند الضغط على أي مفتاح
+            if (gameScreen.classList.contains('hidden') === false && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                typingInput.focus();
+            }
+        });
+    });
+</script>
