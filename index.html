@@ -1,161 +1,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.tailwindcss.com"></script>
-html
-    .typing-text::-webkit-scrollbar {
-        width: 0;
-    }
-    
-    .correct {
-        color: #10b981;
-    }
-    
-    .incorrect {
-        color: #ef4444;
-        text-decoration: underline;
-        text-decoration-color: #ef4444;
-    }
-    
-    .current {
-        background-color: rgba(255, 255, 255, 0.3);
-        border-radius: 2px;
-    }
-    
-    .typing-input {
-        opacity: 0;
-        position: absolute;
-        z-index: -999;
-    }
-    
-    .difficulty-btn.active {
-        background-color: #6d28d9;
-        color: white;
-    }
-    
-    .confetti {
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        background-color: #f59e0b;
-        border-radius: 50%;
-        animation: fall 3s ease-in-out infinite;
-    }
-    
-    @keyframes fall {
-        0% {
-            transform: translateY(-100px) rotate(0deg);
-            opacity: 1;
-        }
-        100% {
-            transform: translateY(100vh) rotate(360deg);
-            opacity: 0;
-        }
-    }
-    
-    .pulse {
-        animation: pulse 1s infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.05);
-        }
-    }
-    
-    .fade-in {
-        animation: fadeIn 0.5s ease-in;
-    }
-    
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .timer-bar {
-        transition: width 0.1s linear;
-    }
-    
-    .game-container {
-        background-color: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(10px);
-        border-radius: 1rem;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .game-panel {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 0.75rem;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .btn-primary {
-        background-color: #8b5cf6;
-        color: white;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-primary:hover {
-        background-color: #7c3aed;
-        transform: translateY(-2px);
-    }
-    
-    .btn-success {
-        background-color: #10b981;
-        color: white;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-success:hover {
-        background-color: #059669;
-        transform: translateY(-2px);
-    }
-    
-    .btn-secondary {
-        background-color: #6b7280;
-        color: white;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-secondary:hover {
-        background-color: #4b5563;
-        transform: translateY(-2px);
-    }
-    
-    .stat-card {
-        background-color: rgba(139, 92, 246, 0.2);
-        border-radius: 0.5rem;
-        border: 1px solid rgba(139, 92, 246, 0.3);
-    }
-    
-    .highlight-text {
-        color: #f0abfc;
-        font-weight: 600;
-    }
+
+
 </style>
     <!-- شاشة البداية -->
     <div id="start-screen" class="fade-in">
-        <div class="game-panel p-6 mb-6">
-            <h2 class="text-xl font-bold text-white mb-4">اختر مستوى الصعوبة</h2>
-            <div class="flex flex-wrap gap-3 mb-6">
-                <button class="difficulty-btn bg-white bg-opacity-20 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all active" data-difficulty="سهل">سهل</button>
-                <button class="difficulty-btn bg-white bg-opacity-20 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all" data-difficulty="متوسط">متوسط</button>
-                <button class="difficulty-btn bg-white bg-opacity-20 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all" data-difficulty="صعب">صعب</button>
-                <button class="difficulty-btn bg-white bg-opacity-20 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all" data-difficulty="خبير">خبير</button>
+        <div class="panel">
+            <h2>اختر مستوى الصعوبة</h2>
+            <div class="difficulty-buttons">
+                <button class="btn difficulty-btn active" data-difficulty="سهل">سهل</button>
+                <button class="btn difficulty-btn" data-difficulty="متوسط">متوسط</button>
+                <button class="btn difficulty-btn" data-difficulty="صعب">صعب</button>
+                <button class="btn difficulty-btn" data-difficulty="خبير">خبير</button>
             </div>
             
-            <div class="mb-6">
-                <h3 class="text-lg font-medium text-white mb-2">تعليمات اللعبة:</h3>
-                <ul class="text-purple-200 list-disc list-inside space-y-1">
+            <div class="instructions">
+                <h3>تعليمات اللعبة:</h3>
+                <ul>
                     <li>اكتب النص المعروض بأسرع ما يمكن وبدقة عالية</li>
                     <li>سيتم احتساب الوقت والدقة لكل جملة</li>
                     <li>كلما زادت الصعوبة، زادت صعوبة النصوص وقل الوقت المتاح</li>
@@ -163,21 +25,21 @@ html
                 </ul>
             </div>
             
-            <button id="start-btn" class="w-full btn-success font-bold py-3 px-6 rounded-lg pulse">
+            <button id="start-btn" class="btn btn-primary pulse">
                 ابدأ التحدي
             </button>
         </div>
         
-        <div class="game-panel p-6">
-            <h2 class="text-xl font-bold text-white mb-4">أفضل النتائج</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="stat-card p-4">
-                    <h3 class="font-medium text-purple-200 mb-2">السرعة</h3>
-                    <p id="best-speed" class="text-2xl font-bold text-yellow-300">0 كلمة/دقيقة</p>
+        <div class="panel">
+            <h2>أفضل النتائج</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>السرعة</h3>
+                    <p id="best-speed">0 كلمة/دقيقة</p>
                 </div>
-                <div class="stat-card p-4">
-                    <h3 class="font-medium text-purple-200 mb-2">الدقة</h3>
-                    <p id="best-accuracy" class="text-2xl font-bold text-yellow-300">0%</p>
+                <div class="stat-card">
+                    <h3>الدقة</h3>
+                    <p id="best-accuracy">0%</p>
                 </div>
             </div>
         </div>
@@ -185,51 +47,50 @@ html
     
     <!-- شاشة اللعب -->
     <div id="game-screen" class="hidden fade-in">
-        <div class="flex justify-between items-center mb-4">
-            <div class="flex items-center gap-4">
-                <div class="game-panel py-2 px-4">
-                    <span class="text-sm text-purple-200">المستوى:</span>
-                    <span id="difficulty-display" class="font-bold text-white">سهل</span>
-                </div>
-                <div class="game-panel py-2 px-4">
-                    <span class="text-sm text-purple-200">الجملة:</span>
-                    <span id="sentence-count" class="font-bold text-white">1/10</span>
-                </div>
+        <div class="game-info">
+            <div class="game-info-item">
+                <span>المستوى:</span>
+                <span id="difficulty-display">سهل</span>
             </div>
-            <div class="game-panel py-2 px-4">
-                <span class="text-sm text-purple-200">الوقت:</span>
-                <span id="time-display" class="font-bold text-white">30</span>
+            <div class="game-info-item">
+                <span>الجملة:</span>
+                <span id="sentence-count">1/10</span>
+            </div>
+            <div class="game-info-item">
+                <span>الوقت:</span>
+                <span id="time-display">30</span>
             </div>
         </div>
         
-        <div class="relative w-full bg-gray-700 bg-opacity-40 h-2 rounded-full mb-6">
-            <div id="timer-bar" class="timer-bar absolute top-0 left-0 h-full bg-green-500 rounded-full" style="width: 100%;"></div>
+        <div class="timer-container">
+            <div id="timer-bar" class="timer-bar" style="width: 100%;"></div>
         </div>
         
-        <div class="game-panel p-6 mb-6">
-            <div id="typing-text" class="text-xl md:text-2xl text-white leading-relaxed mb-6 h-32 overflow-y-auto"></div>
+        <div class="typing-area panel">
+            <div id="typing-text" class="typing-text"></div>
             <input type="text" id="typing-input" class="typing-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-            <div class="stat-card p-4 flex justify-between items-center">
-                <div>
-                    <span class="text-sm text-purple-200">السرعة:</span>
-                    <span id="speed" class="font-bold text-white">0 كلمة/دقيقة</span>
+            
+            <div class="typing-stats">
+                <div class="typing-stat">
+                    <span>السرعة</span>
+                    <span id="speed">0 كلمة/دقيقة</span>
                 </div>
-                <div>
-                    <span class="text-sm text-purple-200">الدقة:</span>
-                    <span id="accuracy" class="font-bold text-white">100%</span>
+                <div class="typing-stat">
+                    <span>الدقة</span>
+                    <span id="accuracy">100%</span>
                 </div>
-                <div>
-                    <span class="text-sm text-purple-200">الأخطاء:</span>
-                    <span id="errors" class="font-bold text-white">0</span>
+                <div class="typing-stat">
+                    <span>الأخطاء</span>
+                    <span id="errors">0</span>
                 </div>
             </div>
         </div>
         
-        <div class="flex justify-between">
-            <button id="restart-btn" class="btn-primary font-medium py-2 px-6 rounded-lg">
+        <div class="action-buttons">
+            <button id="restart-btn" class="btn btn-primary">
                 إعادة المحاولة
             </button>
-            <button id="quit-btn" class="btn-secondary font-medium py-2 px-6 rounded-lg">
+            <button id="quit-btn" class="btn btn-secondary">
                 العودة للقائمة
             </button>
         </div>
@@ -237,38 +98,37 @@ html
     
     <!-- شاشة النتائج -->
     <div id="result-screen" class="hidden fade-in">
-        <div class="game-panel p-6 mb-6 text-center">
-            <h2 class="text-2xl font-bold text-white mb-2">انتهى التحدي!</h2>
-            <p id="result-message" class="text-xl text-purple-200 mb-6">أحسنت! لقد أكملت التحدي بنجاح.</p>
+        <div class="panel">
+            <h2 class="result-message" id="result-message">انتهى التحدي!</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="stat-card p-4">
-                    <h3 class="font-medium text-purple-200 mb-1">متوسط السرعة</h3>
-                    <p id="final-speed" class="text-2xl font-bold text-yellow-300">0 كلمة/دقيقة</p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>متوسط السرعة</h3>
+                    <p id="final-speed">0 كلمة/دقيقة</p>
                 </div>
-                <div class="stat-card p-4">
-                    <h3 class="font-medium text-purple-200 mb-1">متوسط الدقة</h3>
-                    <p id="final-accuracy" class="text-2xl font-bold text-yellow-300">0%</p>
+                <div class="stat-card">
+                    <h3>متوسط الدقة</h3>
+                    <p id="final-accuracy">0%</p>
                 </div>
-                <div class="stat-card p-4">
-                    <h3 class="font-medium text-purple-200 mb-1">إجمالي الأخطاء</h3>
-                    <p id="final-errors" class="text-2xl font-bold text-yellow-300">0</p>
+                <div class="stat-card">
+                    <h3>إجمالي الأخطاء</h3>
+                    <p id="final-errors">0</p>
                 </div>
             </div>
             
-            <div class="flex flex-col md:flex-row gap-4 justify-center">
-                <button id="play-again-btn" class="btn-success font-bold py-3 px-6 rounded-lg">
+            <div class="result-buttons">
+                <button id="play-again-btn" class="btn btn-success">
                     العب مرة أخرى
                 </button>
-                <button id="home-btn" class="btn-primary font-bold py-3 px-6 rounded-lg">
+                <button id="home-btn" class="btn btn-primary">
                     العودة للقائمة الرئيسية
                 </button>
             </div>
         </div>
         
-        <div class="game-panel p-6">
-            <h2 class="text-xl font-bold text-white mb-4">تفاصيل الأداء</h2>
-            <div id="performance-details" class="space-y-4">
+        <div class="panel performance-details">
+            <h2>تفاصيل الأداء</h2>
+            <div id="performance-details">
                 <!-- سيتم ملء هذا القسم ديناميكيًا -->
             </div>
         </div>
@@ -316,8 +176,6 @@ html
         let totalTyped = 0;
         let isTyping = false;
         let sentencePerformance = [];
-        let currentWordIndex = 0;
-        let currentCharIndex = 0;
         
         // قواعد البيانات للنصوص حسب مستوى الصعوبة
         const sentencesDB = {
@@ -348,12 +206,7 @@ html
                 'الرياضة تساهم في بناء الجسم السليم وتعزيز الصحة النفسية والبدنية للإنسان.',
                 'القراءة تفتح آفاقا جديدة وتوسع مدارك الإنسان وتنمي قدراته الفكرية والإبداعية.',
                 'التعليم هو أساس تقدم الأمم وازدهارها وبناء مستقبل أفضل للأجيال القادمة.',
-                'الذكاء الاصطناعي أصبح جزءا مهما من التطور التكنولوجي في مختلف المجالات.',
-                'السفر يوسع المدارك ويعرفنا على ثقافات وحضارات مختلفة حول العالم.',
-                'الموسيقى لغة عالمية تتخطى حدود اللغات والثقافات وتصل إلى قلوب الناس.',
-                'الصحافة هي السلطة الرابعة التي تراقب وتنقل الأحداث وتشكل الرأي العام.',
-                'التسامح قيمة إنسانية عظيمة تساعد على بناء مجتمعات متماسكة ومتحابة.',
-                'الإبداع هو القدرة على رؤية ما لا يراه الآخرون وتحويل الأفكار إلى واقع ملموس.'
+                'الذكاء الاصطناعي أصبح جزءا مهما من التطور التكنولوجي في مختلف المجالات.'
             ],
             'صعب': [
                 'تعتبر الثورة الصناعية الرابعة نقلة نوعية في تاريخ البشرية، حيث أدت إلى دمج التكنولوجيا في مختلف جوانب الحياة بشكل غير مسبوق.',
@@ -363,31 +216,14 @@ html
                 'الاقتصاد المعرفي يعتمد على الابتكار والإبداع والبحث العلمي كركائز أساسية للتنمية المستدامة في القرن الحادي والعشرين.',
                 'التنوع الثقافي يعد ثروة إنسانية يجب الحفاظ عليها وتعزيزها من خلال الحوار والتبادل الثقافي بين مختلف شعوب العالم.',
                 'الأمن السيبراني أصبح من أهم التحديات التي تواجه الدول والمؤسسات في ظل الاعتماد المتزايد على التكنولوجيا الرقمية.',
-                'الفلسفة تسعى إلى فهم الوجود والمعرفة والقيم من خلال التفكير النقدي والتأمل العميق في مختلف جوانب الحياة الإنسانية.',
-                'العولمة أدت إلى تقارب الثقافات وتداخل المصالح الاقتصادية والسياسية بين دول العالم بشكل لم يسبق له مثيل في التاريخ.',
-                'الطاقة المتجددة تمثل الحل الأمثل لمشكلة نضوب الموارد الطبيعية وتلوث البيئة الناتج عن استخدام الوقود الأحفوري.',
-                'التطور التكنولوجي المتسارع يفرض تحديات جديدة على النظم التعليمية التقليدية ويستدعي إعادة النظر في أساليب التعليم ومناهجه.',
-                'الهندسة الوراثية فتحت آفاقاً جديدة في مجال الطب والزراعة، لكنها أثارت جدلاً واسعاً حول الحدود الأخلاقية للتدخل في الطبيعة البشرية.',
-                'الديمقراطية تعتبر من أرقى أشكال الحكم التي توصلت إليها البشرية، لكنها تواجه تحديات كبيرة في ظل صعود الشعبوية والاستقطاب السياسي.',
-                'الفن المعاصر يعكس تعقيدات الحياة الحديثة ويسعى إلى كسر القوالب التقليدية والبحث عن أشكال جديدة للتعبير عن الواقع الإنساني.',
-                'الفلسفة السياسية تبحث في أسس الحكم العادل وعلاقة الفرد بالدولة وحدود الحرية والسلطة في المجتمعات الإنسانية.'
+                'الفلسفة تسعى إلى فهم الوجود والمعرفة والقيم من خلال التفكير النقدي والتأمل العميق في مختلف جوانب الحياة الإنسانية.'
             ],
             'خبير': [
                 'تتجلى أهمية الفلسفة التحليلية في قدرتها على تفكيك المفاهيم المعقدة وإخضاعها للتحليل المنطقي الدقيق، مما يساهم في توضيح الالتباسات اللغوية التي قد تؤدي إلى سوء الفهم في مختلف المجالات المعرفية.',
                 'الاستشراق كظاهرة ثقافية وأكاديمية لعب دوراً محورياً في تشكيل الصورة النمطية عن الشرق في المخيال الغربي، وقد تعرض لنقد جذري من قبل المفكرين ما بعد الكولونياليين الذين كشفوا عن علاقات القوة الكامنة وراء الخطاب الاستشراقي.',
                 'تعتبر نظرية الأوتار الفائقة من أكثر النظريات الفيزيائية طموحاً في محاولتها توحيد قوانين الفيزياء الكمية مع النسبية العامة، رغم التحديات الرياضية الهائلة والصعوبات التجريبية التي تواجه التحقق من صحتها.',
                 'الهيرمينوطيقا كنظرية في التأويل تتجاوز مجرد فهم النصوص إلى استكشاف العلاقة الجدلية بين المفسر والنص والسياق التاريخي، مما يفتح آفاقاً جديدة لفهم التراث الإنساني بمختلف تجلياته الثقافية والفكرية.',
-                'تشكل الثورة الإبستمولوجية التي أحدثها توماس كون في فلسفة العلم منعطفاً حاسماً في فهم تطور المعرفة العلمية، حيث أبرزت دور النماذج الإرشادية والعوامل الاجتماعية والتاريخية في تشكيل النظريات العلمية.',
-                'الميتافيزيقا المعاصرة تسعى إلى إعادة صياغة الأسئلة الوجودية الكبرى في ضوء التطورات العلمية الحديثة، متجاوزة النقد الوضعي الذي اعتبرها ضرباً من الكلام الفارغ الذي لا يمكن التحقق منه تجريبياً.',
-                'تمثل الفينومينولوجيا منهجاً فلسفياً يسعى إلى وصف الظواهر كما تتجلى للوعي مباشرة، متجاوزاً الافتراضات المسبقة والنظريات الجاهزة، مما يفتح المجال لفهم أعمق للتجربة الإنسانية في مختلف أبعادها.',
-                'الأنثروبولوجيا البنيوية قدمت رؤية جديدة لفهم الثقافات الإنسانية من خلال الكشف عن البنى العميقة والأنساق الرمزية التي تحكم الممارسات الاجتماعية والثقافية رغم تنوعها الظاهري.',
-                'تطرح الإشكاليات البيوأخلاقية المعاصرة تحديات غير مسبوقة أمام الفلسفة الأخلاقية التقليدية، خاصة في ظل التطورات المتسارعة في مجالات الهندسة الوراثية والذكاء الاصطناعي والتقنيات الطبية الحديثة.',
-                'النظرية النقدية لمدرسة فرانكفورت قدمت تحليلاً عميقاً للعقلانية الأداتية التي تهيمن على المجتمعات الصناعية المتقدمة، كاشفة عن التناقضات الداخلية للحداثة وآثارها السلبية على الحياة الإنسانية.',
-                'تعكس الفلسفة التفكيكية جاك دريدا تحولاً جذرياً في فهم اللغة والنصوص، حيث تكشف عن التناقضات الداخلية والثنائيات الهرمية التي تحكم الخطاب الفلسفي الغربي منذ أفلاطون.',
-                'الإبستمولوجيا التطورية تقدم مقاربة جديدة لفهم المعرفة البشرية من خلال ربطها بالتطور البيولوجي للجنس البشري، معتبرة أن آليات المعرفة هي نتاج للانتقاء الطبيعي عبر ملايين السنين.',
-                'تمثل نظرية العدالة لجون رولز محاولة طموحة لإعادة صياغة الفلسفة السياسية الليبرالية على أسس تعاقدية جديدة، متجاوزة النفعية الكلاسيكية ومستعيدة مفهوم العقد الاجتماعي بصيغة معاصرة.',
-                'الهرمنيوطيقا الفلسفية لغادامير تتجاوز مجرد تقديم منهجية لتفسير النصوص إلى استكشاف الشروط الأنطولوجية للفهم ذاته، معتبرة أن التأويل هو الطريقة الأساسية لوجود الإنسان في العالم.',
-                'تطرح ما بعد الحداثة تحدياً جذرياً للسرديات الكبرى التي هيمنت على الفكر الغربي، مشككة في مفاهيم التقدم والعقلانية والحقيقة المطلقة، ومنادية بالتعددية والاختلاف كبديل عن النزعة الشمولية للحداثة.'
+                'تشكل الثورة الإبستمولوجية التي أحدثها توماس كون في فلسفة العلم منعطفاً حاسماً في فهم تطور المعرفة العلمية، حيث أبرزت دور النماذج الإرشادية والعوامل الاجتماعية والتاريخية في تشكيل النظريات العلمية.'
             ]
         };
         
@@ -504,8 +340,6 @@ html
             });
             
             // إعادة تعيين المتغيرات
-            currentWordIndex = 0;
-            currentCharIndex = 0;
             errors = 0;
             totalTyped = 0;
             errorsElement.textContent = '0';
@@ -540,11 +374,11 @@ html
                 
                 // تغيير لون شريط الوقت حسب الوقت المتبقي
                 if (percentage > 60) {
-                    timerBar.className = 'timer-bar absolute top-0 left-0 h-full bg-green-500 rounded-full';
+                    timerBar.style.backgroundColor = '#10b981';
                 } else if (percentage > 30) {
-                    timerBar.className = 'timer-bar absolute top-0 left-0 h-full bg-yellow-500 rounded-full';
+                    timerBar.style.backgroundColor = '#f59e0b';
                 } else {
-                    timerBar.className = 'timer-bar absolute top-0 left-0 h-full bg-red-500 rounded-full';
+                    timerBar.style.backgroundColor = '#ef4444';
                 }
             } else {
                 // انتهاء الوقت
@@ -700,40 +534,40 @@ html
             performanceDetails.innerHTML = '';
             sentencePerformance.forEach((perf, index) => {
                 const sentenceResult = document.createElement('div');
-                sentenceResult.className = 'stat-card p-3 mb-3';
+                sentenceResult.className = 'sentence-result';
                 
                 const sentenceHeader = document.createElement('div');
-                sentenceHeader.className = 'flex justify-between items-center mb-2';
+                sentenceHeader.className = 'sentence-header';
                 
                 const sentenceTitle = document.createElement('h3');
-                sentenceTitle.className = 'font-medium text-white';
+                sentenceTitle.style.color = 'white';
                 sentenceTitle.textContent = `الجملة ${index + 1}`;
                 
                 const sentenceStatus = document.createElement('span');
-                sentenceStatus.className = perf.completed ? 'text-green-400 text-sm' : 'text-red-400 text-sm';
+                sentenceStatus.style.color = perf.completed ? '#10b981' : '#ef4444';
                 sentenceStatus.textContent = perf.completed ? 'مكتملة' : 'غير مكتملة';
                 
                 sentenceHeader.appendChild(sentenceTitle);
                 sentenceHeader.appendChild(sentenceStatus);
                 
                 const sentenceText = document.createElement('p');
-                sentenceText.className = 'text-purple-200 text-sm mb-2';
+                sentenceText.className = 'sentence-text';
                 sentenceText.textContent = perf.sentence.length > 50 ? perf.sentence.substring(0, 50) + '...' : perf.sentence;
                 
                 const sentenceStats = document.createElement('div');
-                sentenceStats.className = 'grid grid-cols-3 gap-2 text-center text-xs';
+                sentenceStats.className = 'sentence-stats';
                 
                 const speedStat = document.createElement('div');
-                speedStat.className = 'bg-white bg-opacity-10 rounded p-1';
-                speedStat.innerHTML = `<span class="text-purple-200">السرعة:</span> <span class="text-white font-medium">${perf.speed} كلمة/دقيقة</span>`;
+                speedStat.className = 'sentence-stat';
+                speedStat.innerHTML = `<span>السرعة:</span> <span>${perf.speed} كلمة/دقيقة</span>`;
                 
                 const accuracyStat = document.createElement('div');
-                accuracyStat.className = 'bg-white bg-opacity-10 rounded p-1';
-                accuracyStat.innerHTML = `<span class="text-purple-200">الدقة:</span> <span class="text-white font-medium">${perf.accuracy}%</span>`;
+                accuracyStat.className = 'sentence-stat';
+                accuracyStat.innerHTML = `<span>الدقة:</span> <span>${perf.accuracy}%</span>`;
                 
                 const errorsStat = document.createElement('div');
-                errorsStat.className = 'bg-white bg-opacity-10 rounded p-1';
-                errorsStat.innerHTML = `<span class="text-purple-200">الأخطاء:</span> <span class="text-white font-medium">${perf.errors}</span>`;
+                errorsStat.className = 'sentence-stat';
+                errorsStat.innerHTML = `<span>الأخطاء:</span> <span>${perf.errors}</span>`;
                 
                 sentenceStats.appendChild(speedStat);
                 sentenceStats.appendChild(accuracyStat);
@@ -769,7 +603,7 @@ html
         // الحصول على جمل عشوائية
         function getRandomSentences(sentencesArray, count) {
             const shuffled = [...sentencesArray].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, count);
+            return shuffled.slice(0, Math.min(count, shuffled.length));
         }
         
         // إنشاء تأثير الاحتفال
